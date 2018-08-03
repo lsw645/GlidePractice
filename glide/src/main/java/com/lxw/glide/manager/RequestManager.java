@@ -8,6 +8,7 @@ import android.os.ParcelFileDescriptor;
 import com.lxw.glide.Glide;
 import com.lxw.glide.load.model.ModelLoader;
 import com.lxw.glide.request.builder.DrawableTypeRequest;
+import com.lxw.glide.util.Util;
 
 import java.io.InputStream;
 
@@ -55,16 +56,24 @@ public class RequestManager implements LifecycleListener {
 
     @Override
     public void onStart() {
+        resumeRequests();
+    }
 
+    public void resumeRequests() {
+        Util.assertMainThread();
+        requestTracker.resumeRequests();
     }
 
     @Override
     public void onStop() {
-
+        requestTracker.pauseRequests();
     }
-
+    public boolean isPaused() {
+        Util.assertMainThread();
+        return requestTracker.isPaused();
+    }
     @Override
     public void onDestroy() {
-
+        requestTracker.clearRequests();
     }
 }

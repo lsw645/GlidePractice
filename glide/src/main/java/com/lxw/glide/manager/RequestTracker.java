@@ -27,7 +27,7 @@ public class RequestTracker {
     private boolean isPaused;
 
     public void runRequest(Request request) {
-        requests.add(request);
+        addRequest(request);
         if (!isPaused) {
             request.begin();
         } else {

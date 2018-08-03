@@ -140,11 +140,11 @@ public class EngineJob implements EngineRunnable.EngineRunnableManager {
         // Hold on to resource for duration of request so we don't recycle it in the middle of notifying if it
         // synchronously released by one of the callbacks.
         engineResource.acquire();
-        listener.onEngineJobComplete(key, engineResource);
+       listener.onEngineJobComplete(key, engineResource);
 
         for (ResourceCallback cb : cbs) {
             engineResource.acquire();
-            cb.onResourceReady(engineResource);
+            cb.onResourceReady(resource);
         }
         // Our request is complete, so we can release the resource.
         engineResource.release();

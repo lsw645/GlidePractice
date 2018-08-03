@@ -167,7 +167,7 @@ public class Engine implements EngineJobListener, EngineResource.ResourceListene
     }
 
     @Override
-    public void onEngineJobComplete(Key key, EngineResource<?> resource) {
+    public  EngineResource<?> onEngineJobComplete(Key key, EngineResource<?> resource) {
         //每一个加载成功的资源都需要进行resourceListener的监听
 //        Log.d(TAG, "onEngineJobComplete() returned: " + resource.get());
         Log.d(TAG, "onEngineJobComplete() returned: " + resource);
@@ -178,10 +178,13 @@ public class Engine implements EngineJobListener, EngineResource.ResourceListene
             resource.setResourceListener(key, this);
             if (resource.isCacheable()) {
                 activeResources.put(key, new ResourceWeakReference(key, resource, getResourceReferenceQueue()));
+                return resource;
             }
         }
+
         //表示 该网络请求任务已完成
         jobs.remove(key);
+        return null;
     }
 
     @Override
@@ -190,6 +193,11 @@ public class Engine implements EngineJobListener, EngineResource.ResourceListene
             jobs.remove(key);
         }
 
+    }
+
+    @Override
+    public EngineResource<?> hah(EngineResource<?> resource) {
+        return resource;
     }
 
     @Override

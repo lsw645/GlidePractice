@@ -189,6 +189,13 @@ public final class GenericRequest<ModelType, DataType, ResourceType, TranscodeTy
         return placeholderDrawable;
     }
 
+    private Drawable getErrorDrawable() {
+        if (errorDrawable == null && errorResourceId > 0) {
+            errorDrawable = context.getResources().getDrawable(errorResourceId);
+        }
+        return errorDrawable;
+    }
+
 
     @Override
     public void recycle() {
@@ -202,15 +209,17 @@ public final class GenericRequest<ModelType, DataType, ResourceType, TranscodeTy
         loadedFromMemoryCache = false;
         REQUEST_POOL.offer(this);
     }
+
     private static final String TAG = "GenericRequest";
+
     @Override
     public void onResourceReady(Resource<?> resource) {
         TranscodeType transcodeType = (TranscodeType) resource.get();
         this.resource = resource;
         GlideBitmapDrawable drawable = (GlideBitmapDrawable) transcodeType;
         Bitmap bitmap = drawable.getBitmap();
-
-        Log.v(TAG, "onResourceReady  " + transcodeType+"  bitmap "+bitmap);
+        status = Status.COMPLETE;
+        Log.v(TAG, "onResourceReady  " + transcodeType + "  bitmap " + bitmap);
         if (requestListener == null || !requestListener.onResourceReady(transcodeType, model,
                 target, true, true)) {
             target.onResourceReady(transcodeType);
@@ -219,6 +228,7 @@ public final class GenericRequest<ModelType, DataType, ResourceType, TranscodeTy
 
     @Override
     public void onException(Exception e) {
+        target.onLoadFailed(e,getErrorDrawable());
         Log.e(TAG, "onException() returned: " + e.getMessage());
     }
 
